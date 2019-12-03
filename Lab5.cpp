@@ -1,138 +1,125 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
+#define SIZEOFMATRIX 5
+using namespace std;
 
 class ArrayColumnDown
 {
-    friend void sortMatrix(ArrayColumnDown matrix[]);
+    friend void sortColumnOfMatrixDescending(ArrayColumnDown matrix[]);
     friend void inputMatrix(ArrayColumnDown matrix[]);
     friend void outputMatrix(ArrayColumnDown matrix[]);
-    friend void Functions(ArrayColumnDown matrix[]);
+    friend void functions(ArrayColumnDown matrix[]);
 
 private:
-    int column[5];
+    int column[SIZEOFMATRIX];
 
 public:
-    void merge(int *A, int left, int middle, int right)
+    void merge(int *initialArray, int leftElementNumber, int middleElementNumber, int rightElementNumber)
     {
-        int i = left, j = middle + 1, k = 0;
-        int T[right - left + 1];
-        while (i <= middle && j <= right)
+        int leftVariableElementNumber = leftElementNumber, middleVariableElementNumber = middleElementNumber + 1, indexOfExtraArray = 0;
+        int extraArray[rightElementNumber - leftElementNumber + 1];
+        while (leftVariableElementNumber <= middleElementNumber && middleVariableElementNumber <= rightElementNumber)
         {
-            if (A[i] > A[j])
+            if (initialArray[leftVariableElementNumber] > initialArray[middleVariableElementNumber])
             {
-                T[k] = A[i];
-                i++;
+                extraArray[indexOfExtraArray] = initialArray[leftVariableElementNumber];
+                leftVariableElementNumber++;
             }
             else
             {
-                T[k] = A[j];
-                j++;
+                extraArray[indexOfExtraArray] = initialArray[middleVariableElementNumber];
+                middleVariableElementNumber++;
             }
-            k++;
+            indexOfExtraArray++;
         }
-        while (i <= middle)
+        while (leftVariableElementNumber <= middleElementNumber)
         {
-            T[k] = A[i];
-            k++;
-            i++;
+            extraArray[indexOfExtraArray] = initialArray[leftVariableElementNumber];
+            indexOfExtraArray++;
+            leftVariableElementNumber++;
         }
-        while (j <= right)
+        while (middleVariableElementNumber <= rightElementNumber)
         {
-            T[k] = A[j];
-            k++;
-            j++;
+            extraArray[indexOfExtraArray] = initialArray[middleVariableElementNumber];
+            indexOfExtraArray++;
+            middleVariableElementNumber++;
         }
-        for (i = left; i <= right; i++)
-            A[i] = T[i - left];
+        for (leftVariableElementNumber = leftElementNumber; leftVariableElementNumber <= rightElementNumber; leftVariableElementNumber++)
+        {
+            initialArray[leftVariableElementNumber] = extraArray[leftVariableElementNumber - leftElementNumber];
+        }    
     }
-    void mergesort(int *A, int left, int right)
+    void mergeSort(int *initialArray, int leftElementNumber, int rightElementNumber)
     {
-        int middle = (left + right) / 2;
-        if ((right - left) > 0)
+        int middleElementNumber = (leftElementNumber + rightElementNumber) / 2;
+        if ((rightElementNumber - leftElementNumber) > 0)
         {
-            mergesort(A, left, middle);
-            mergesort(A, middle + 1, right);
+            mergeSort(initialArray, leftElementNumber, middleElementNumber);
+            mergeSort(initialArray, middleElementNumber + 1, rightElementNumber);
         }
-        merge(A, left, middle, right);
+        merge(initialArray, leftElementNumber, middleElementNumber, rightElementNumber);
     }
 };
 void inputMatrix(ArrayColumnDown matrix[])
 {
     std::cout << "Enter your matrix:" << std::endl;
-    for (int j = 0; j < 5; j++)
+    for (int jCount = 0; jCount < SIZEOFMATRIX; jCount++)
     {
-        for (int i = 0; i < 5; i++)
+        for (int iCount = 0; iCount < SIZEOFMATRIX; iCount++)
         {
-            std::cin >> matrix[i].column[j];
+            std::cin >> matrix[iCount].column[jCount];
         }
     }
 }
 void outputMatrix(ArrayColumnDown matrix[])
 {
     std::cout << "This is your matrix:" << std::endl;
-    for (int j = 0; j < 5; j++)
+    for (int jCount = 0; jCount < SIZEOFMATRIX; jCount++)
     {
-        for (int i = 0; i < 5; i++)
+        for (int iCount = 0; iCount < SIZEOFMATRIX; iCount++)
         {
-            std::cout << matrix[i].column[j] << '\t';
+            std::cout << matrix[iCount].column[jCount] << '\t';
         }
         std::cout << std::endl;
     }
 }
 
-void sortMatrix(ArrayColumnDown matrix[])
+void sortColumnOfMatrixDescending(ArrayColumnDown matrix[])
 {
-    for (int i = 0; i < 5; i++)
+    for (int iCount = 0; iCount < SIZEOFMATRIX; iCount++)
     {
-        matrix[i].mergesort(matrix[i].column, 0, 4);
+        matrix[iCount].mergeSort(matrix[iCount].column, 0, SIZEOFMATRIX-1);
     }
 }
 
-void Functions(ArrayColumnDown matrix[])
+void functions(ArrayColumnDown matrix[])
 {
     double average, sum = 0;
-    for (int j = 1; j < 5; j++)
+    for (int jCount = 1; jCount < SIZEOFMATRIX; jCount++)
     {
         average = 1;
-        for (int i = 0; i < 4; i++)
+        for (int iCount = 0; iCount < SIZEOFMATRIX-1; iCount++)
         {
-            if (j > i)
+            if (jCount > iCount)
             {
-            average *= matrix[i].column[j];
+            average *= matrix[iCount].column[jCount];
             }
         }
-        average = pow(abs(average),(float)  1 / j);
+        average = pow(abs(average),(float)  1 / jCount);
         sum += average;
-        std::cout << "The average of geom " << j << " = " << average << std::endl;
+        std::cout << "The average of geom " << jCount << " = " << average << std::endl;
     }
     std::cout << "Sum of function =" << sum << std::endl;
 }
 
-/*float Functions(int arr[n][n]) {
-  int i, j, multiply = 1;
-  double geom=0, sum=0;
-  for (i = 0; i < n - 1; i++) {
-    for (j = 1; j < n; j++) {
-      if (j > i)
-        multiply *= arr[i][j];
-    }
-    geom = pow(abs(multiply),(float)  1 / (n - 1 - i));
-    multiply = 1;
-    printf("%lf   ", geom);
-    sum += geom;
-  }
-  printf("\n%lf", sum);
-  return 0;
-}*/
-
 int main()
 {
-    ArrayColumnDown matrix[5];
+    ArrayColumnDown matrix[SIZEOFMATRIX];
     inputMatrix(matrix);
     outputMatrix(matrix);
-    sortMatrix(matrix);
+    sortColumnOfMatrixDescending(matrix);
     outputMatrix(matrix);
-    Functions(matrix);
+    functions(matrix);
     return 0;
 }
